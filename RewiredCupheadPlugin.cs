@@ -18,7 +18,7 @@ public class RewiredCupheadPlugin : BaseUnityPlugin
     private const string
         PLUGIN_GUID = "alexbw145.cuphead.rewiredcompat",
         PLUGIN_NAME = "Rewired Compat API",
-        PLUGIN_VERSION = "1.0.0.0";
+        PLUGIN_VERSION = "1.0.0.1";
     public static string GUID => PLUGIN_GUID;
 
     private void Awake()
@@ -109,7 +109,7 @@ public static partial class RewiredCupheadManager
     {
         player.controllers.maps.GetFirstMapInCategory(ControllerType.Keyboard, 0, action.categoryId)?.CreateElementMap(action.id, pole, keycode, ModifierKeyFlags.None);
     }
-    private static void SetBind(Player player, InputAction action, int elementIdent, ControllerType type, Pole pole = Pole.Positive, bool fullRange = true)
+    private static void SetBind(Player player, InputAction action, int elementIdent, ControllerType type, Pole pole = Pole.Positive, bool fullRange = false)
     {
         if (type == ControllerType.Joystick && player.controllers.joystickCount > 0)
             player.controllers.maps.GetFirstMapInCategory(type, 0, action.categoryId)?.CreateElementMap(action.id, pole, elementIdent, (ControllerElementType)action.type, fullRange ? AxisRange.Full : (AxisRange)(pole + 1), false);
@@ -181,9 +181,9 @@ public static partial class RewiredCupheadManager
             if (keycode != KeyCode.None)
                 saveNow = true;
         }
-        foreach (var action in actions.Where(x => defaultJoystickBinds.ContainsKey(x.Value)))
+        foreach (var action in actions.Where(x => defaultJoystickBinds.ContainsKey(x.Value) && !inputs.Exists(j => x.Key == j.actionName && j.controllerType == ControllerType.Joystick)))
         {
-            if (player.controllers.joystickCount > 0 && !inputs.Exists(j => action.Key == j.actionName && j.controllerType == ControllerType.Joystick))
+            if (player.controllers.joystickCount > 0)
             {
                 SetBind(player, action.Value, defaultJoystickBinds[action.Value], ControllerType.Joystick);
                 if (defaultJoystickBinds[action.Value] != -1)
@@ -286,6 +286,8 @@ public static partial class RewiredCupheadManager
             };
             if (key != KeyCode.None)
                 defaultKeyboardBinds.Add(action, key);
+            if (joystickElementId != -1)
+                defaultJoystickBinds.Add(action, joystickElementId);
             actions.Add(name, action);
             userData.actions.Add(action);
             var behavior = userData.GetInputBehaviorById((int)InputBehaviorID.Default);
@@ -294,8 +296,6 @@ public static partial class RewiredCupheadManager
             userData.actionCategoryMap.list.Add(new Rewired.Data.Mapping.ActionCategoryMap.Entry((int)categoryID));
             userData.actionCategoryMap.AddAction((int)categoryID, action.id);
             DoInsertsToRewired(action, behavior);
-            if (joystickElementId != -1)
-                defaultJoystickBinds.Add(action, joystickElementId);
             return true;
         }
         catch (Exception ex)

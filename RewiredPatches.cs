@@ -97,6 +97,12 @@ internal static class RewiredPatches
         __instance.Redraw(false, false);
     }
 
+    [HarmonyPatch(typeof(ControlMapper), nameof(ControlMapper.Initialize)), HarmonyPostfix]
+    private static void SetSomeVars(ControlMapper __instance)
+    {
+        __instance.allowElementAssignmentConflicts = true;
+    }
+
     [HarmonyPatch(typeof(ControlMapper), "CreateInputGrid")]
     [HarmonyPostfix]
     private static void MaskEm(ControlMapper __instance) // This part got extremely tricky to math, fix, and align correctly.

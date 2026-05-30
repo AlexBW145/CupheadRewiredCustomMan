@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace CupheadRewiredCustomMan;
+namespace CupheadRewiredCompat;
 
 // Source - https://stackoverflow.com/a/36244111
 // Posted by Programmer, modified by community. See post 'Timeline' for change history

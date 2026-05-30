@@ -1,6 +1,5 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
-using CupheadRewiredCustomMan;
 using HarmonyLib;
 using Rewired;
 using Rewired.Data;
@@ -10,7 +9,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-namespace CupheadCustomRewired;
+namespace CupheadRewiredCompat;
 
 [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
 public class RewiredCupheadPlugin : BaseUnityPlugin
@@ -121,6 +120,10 @@ public static partial class RewiredCupheadManager
         bool saveNow = false;
         foreach (var action in actions)
         {
+            if (player.controllers.maps.GetFirstMapInCategory(ControllerType.Keyboard, 0, action.Value.categoryId)?.DeleteElementMapsWithAction(action.Value.id) == true)
+                saveNow = true;
+            if (player.controllers.maps.GetFirstMapInCategory(ControllerType.Joystick, 0, action.Value.categoryId)?.DeleteElementMapsWithAction(action.Value.id) == true)
+                saveNow = true;
             if (defaultKeyboardBinds.ContainsKey(action.Value))
             {
                 KeyCode keycode = defaultKeyboardBinds[action.Value];
@@ -211,7 +214,7 @@ public static partial class RewiredCupheadManager
     }
     public enum InputBehaviorID
     {
-        Default = 0,
+        Default = 0, // Only defined behavior I believe.
     }
     private static void DoInsertsToRewired(Rewired.InputAction action, Rewired.InputBehavior behavior)
     {
@@ -259,12 +262,11 @@ public static partial class RewiredCupheadManager
     /// </summary>
     /// <param name="name">The object-like name of this input</param>
     /// <param name="descriptionName">The localization-like name of this input</param>
-    /// <param name="behaviorID">The behavior ID for this input<para>Already defined ids are 0 (default) and 1 (snap, which all base game inputs uses)</para></param>
     /// <param name="categoryID">The category ID for this input</param>
     /// <param name="key">The default input for this key</param>
     /// <param name="joystickElementId">The default input id for this joystick input</param>
     /// <returns></returns>
-    public static bool CreateNewInput(string name, string descriptionName, InputBehaviorID behaviorID = InputBehaviorID.Default, InputMapCategory categoryID = InputMapCategory.Gameplay,
+    public static bool CreateNewInput(string name, string descriptionName, InputMapCategory categoryID = InputMapCategory.Gameplay,
         KeyCode key = KeyCode.None, int joystickElementId = -1)
     {
         if (name.IsNullOrWhiteSpace()) return false;
@@ -272,11 +274,6 @@ public static partial class RewiredCupheadManager
         if (actions.ContainsKey(name) || userData.actions.Exists(x => x.name == name)) return false;
         try
         {
-            if (behaviorID > InputBehaviorID.Default)
-            {
-                RewiredCupheadPlugin.Logger.LogWarning("Behavior ID has exceeded past 0, binding to 0! (Default behavior)");
-                behaviorID = InputBehaviorID.Default;
-            }
             var action = new Rewired.InputAction()
             {
                 id = userData.GetNewActionId(),
@@ -284,14 +281,14 @@ public static partial class RewiredCupheadManager
                 descriptiveName = descriptionName,
                 type = InputActionType.Button,
                 userAssignable = true,
-                behaviorId = (int)behaviorID,
+                behaviorId = (int)InputBehaviorID.Default,
                 categoryId = (int)categoryID,
             };
             if (key != KeyCode.None)
                 defaultKeyboardBinds.Add(action, key);
             actions.Add(name, action);
             userData.actions.Add(action);
-            var behavior = userData.GetInputBehaviorById((int)behaviorID); // Just do not go above 0 to 1, those are the already defined ones. (Especially when most uses the number 1)
+            var behavior = userData.GetInputBehaviorById((int)InputBehaviorID.Default);
             if (behavior == null)
                 throw new NullReferenceException("Behavior is null");
             userData.actionCategoryMap.list.Add(new Rewired.Data.Mapping.ActionCategoryMap.Entry((int)categoryID));
@@ -389,7 +386,7 @@ public static partial class RewiredCupheadManager
     public static bool GetButton(this PlayerInput me, string inputName) => me.GetButton((CupheadButton)GetInputID(inputName));
     public enum InputMapPage
     {
-        Default = 0,
+        Default = 0, // There really is no way of creating a new category with one just taking over the main content.
     }
     internal static readonly Dictionary<InputMapCategory, InputMapPage> newPages = new Dictionary<InputMapCategory, InputMapPage>();
     /*/// <summary>

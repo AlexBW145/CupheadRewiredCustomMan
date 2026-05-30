@@ -12,7 +12,7 @@
       https://nuget.bepinex.dev/v3/index.json;
       https://nuget.samboy.dev/v3/index.json
     </RestoreAdditionalProjectSources>
-    <RootNamespace>CupheadRewiredCustomMan</RootNamespace>
+    <RootNamespace>CupheadRewiredCompat</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

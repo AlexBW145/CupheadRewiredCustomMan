@@ -1,14 +1,12 @@
-﻿using RektTransform;
-using Rewired.UI.ControlMapper;
+﻿using Rewired.UI.ControlMapper;
 using Rewired.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Experimental.UIElements;
 using UnityEngine.UI;
 
-namespace CupheadRewiredCustomMan;
-// From Stack Overflow
+namespace CupheadRewiredCompat;
+// Information from Stack Overflow answers
 internal class MapperScroller : MonoBehaviour
 {
     private float scrollSpeed = 10f;

@@ -1,5 +1,4 @@
-﻿using CupheadRewiredCustomMan;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Rewired;
 using Rewired.Data;
 using Rewired.UI.ControlMapper;
@@ -11,7 +10,7 @@ using System.Reflection.Emit;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CupheadCustomRewired;
+namespace CupheadRewiredCompat;
 
 [HarmonyPatch]
 internal static class RewiredPatches
@@ -87,7 +86,7 @@ internal static class RewiredPatches
     [HarmonyPatch(typeof(ControlMapper), nameof(ControlMapper.Open), []), HarmonyPostfix]
     private static void ResetSets(ControlMapper __instance)
     {
-        __instance.references.inputGridInnerGroup.parent?.GetComponent<MapperScroller>().SetSets();
+        __instance.references.inputGridInnerGroup?.parent?.GetComponent<MapperScroller>().SetSets();
         //__instance.references.actionsColumn?.Find("ScrollRect")?.GetComponent<MapperScroller>().SetSets();
     }
     [HarmonyPatch(typeof(ControlMapper), "OnRestoreDefaultsConfirmed")]
@@ -100,7 +99,7 @@ internal static class RewiredPatches
 
     [HarmonyPatch(typeof(ControlMapper), "CreateInputGrid")]
     [HarmonyPostfix]
-    private static void MaskEm(ControlMapper __instance)
+    private static void MaskEm(ControlMapper __instance) // This part got extremely tricky to math, fix, and align correctly.
     {
         var column = __instance.references.inputGridInnerGroup;
         if (column.parent.GetComponent<MapperScroller>() == null)
@@ -252,7 +251,7 @@ static class DebugPatches
         }
     }
     [HarmonyPatch(typeof(Level), "Update"), HarmonyPostfix]
-    private static void KillThem(Level __instance)
+    private static void KillThem(Level __instance) // This seems like cheating, but you better not reimplement this.
     {
         if (__instance.Started && !__instance.Ending)
         {

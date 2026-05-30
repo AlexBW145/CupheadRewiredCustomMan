@@ -2,11 +2,11 @@
 ## For Modders
 Just follow the example code in the debug class in `RewiredPatches.cs`, however the simple way of creating a digital input is always this:
 ```c#
-RewiredPlusManager.CreateNewInput(string, string, [behaviorID: RewiredPlusManager.InputBehaviorID, categoryID: RewiredPlusManager.InputMapCategory, key: KeyCode, joystickElementId: int, mouseElementId: int]);
+RewiredCupheadManager.CreateNewInput(string, string, [behaviorID: RewiredCupheadManager.InputBehaviorID, categoryID: RewiredCupheadManager.InputMapCategory, key: KeyCode, joystickElementId: int, mouseElementId: int]);
 ```
 With an example being:
 ```c#
-RewiredPlusManager.CreateNewInput("MyOwnInput", "This Input Appears", key: KeyCode.Q, joystickElementId: 6);
+RewiredCupheadManager.CreateNewInput("MyOwnInput", "This Input Appears", key: KeyCode.Q, joystickElementId: 6);
 ```
 Afterwards, you can just perform regular input checks from the player input instance such as:
 ```c#

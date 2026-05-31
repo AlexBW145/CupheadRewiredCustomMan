@@ -18,7 +18,7 @@ public class RewiredCupheadPlugin : BaseUnityPlugin
     private const string
         PLUGIN_GUID = "alexbw145.cuphead.rewiredcompat",
         PLUGIN_NAME = "Rewired Compat API",
-        PLUGIN_VERSION = "1.0.0.2";
+        PLUGIN_VERSION = "1.0.0.3";
     public static string GUID => PLUGIN_GUID;
 
     private void Awake()
@@ -64,8 +64,9 @@ public static partial class RewiredCupheadManager
     internal static List<ActionElementMap> GetElements(Player player)
     {
         var list = new List<ActionElementMap>();
+        var allCustomActions = actions.Values.ToList();
         foreach (var map in player.controllers.maps.GetAllMaps())
-            map.AllMaps.DoIf(x => x.actionId > ReInput.UserData.actions.Count, list.Add); // DO NOT ADD IN INPUTS TO THIS LIST, THESE ARE LEFT BY DEFAULT.
+            map.AllMaps.DoIf(x => allCustomActions.Exists(j => j.id == x.actionId), list.Add); // Weird unreasoning is that the array is modified to include custom inputs.
         return list;
     }
     internal static void Save(Player player)
@@ -111,8 +112,8 @@ public static partial class RewiredCupheadManager
     }
     private static void SetBind(Player player, InputAction action, int elementIdent, ControllerType type, Pole pole = Pole.Positive, bool fullRange = false)
     {
-        if (type == ControllerType.Joystick && player.controllers.joystickCount > 0)
-            player.controllers.maps.GetFirstMapInCategory(type, 0, action.categoryId)?.CreateElementMap(action.id, pole, elementIdent, (ControllerElementType)action.type, fullRange ? AxisRange.Full : (AxisRange)(pole + 1), false);
+        if (type == ControllerType.Joystick)
+            player.controllers.maps.GetFirstMapInCategory(type, 0, action.categoryId)?.CreateElementMap(fullRange ? ElementAssignment.FullAxisAssignment(elementIdent, action.id, false) : ElementAssignment.SplitAxisAssignment(elementIdent, (AxisRange)(pole + 1), action.id, pole));
     }
     internal static void RestoreDefaults(Player player)
     {

@@ -22,6 +22,7 @@ internal static class RewiredPatches
     [HarmonyPatch(typeof(UserDataStore_Cuphead), "Save"), HarmonyPostfix]
     private static void Save()
     {
+        if (!ReInput.initialized) return;
         IList<Player> allPlayers = ReInput.players.GetPlayers(false);
         for (int i = 0; i < allPlayers.Count; i++)
             RewiredCupheadManager.Save(allPlayers[i]);
@@ -33,6 +34,7 @@ internal static class RewiredPatches
     [HarmonyPostfix]
     private static void Load()
     {
+        if (!ReInput.initialized) return;
         IList<Player> allPlayers = ReInput.players.GetPlayers(false);
         for (int i = 0; i < allPlayers.Count; i++)
             RewiredCupheadManager.Load(allPlayers[i]);

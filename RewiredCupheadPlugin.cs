@@ -18,7 +18,7 @@ public class RewiredCupheadPlugin : BaseUnityPlugin
     private const string
         PLUGIN_GUID = "alexbw145.cuphead.rewiredcompat",
         PLUGIN_NAME = "Rewired Compat API",
-        PLUGIN_VERSION = "1.0.0.1";
+        PLUGIN_VERSION = "1.0.0.2";
     public static string GUID => PLUGIN_GUID;
 
     private void Awake()

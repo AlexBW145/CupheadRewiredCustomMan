@@ -29,6 +29,7 @@ internal static class RewiredPatches
     [HarmonyPatch(typeof(UserDataStore_Cuphead), "Load")]
     //[HarmonyPatch(typeof(SettingsData), "ApplySettingsOnStartup")]
     [HarmonyPatch(typeof(SlotSelectScreen), "Start")]
+    [HarmonyPatch(typeof(PlayerManager), "ControlsChanged")]
     [HarmonyPostfix]
     private static void Load()
     {
